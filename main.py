@@ -14,6 +14,14 @@ WIFI.connect_to_wifi()
 # display.text("Hello", 0,0)
 # display.show()
 
+
+from server import WIFI
+
+if __name__ == "__main__":
+    wifi = WIFI()
+    wifi.main()
+
+
 def web_page():
     """Create a simple HTML page."""
     html = """

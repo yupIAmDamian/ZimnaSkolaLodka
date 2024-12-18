@@ -26,15 +26,17 @@ class WIFI:
             return file.read()
         
     def parse_post_data(self, request):
+        # Decode the byte data to a string
+        request_str = request.decode('utf-8')
+        print(f"Decoded request: {request_str}")
+        
         # Extract POST data (simple parsing)
-        post_data = request.split("\r\n\r\n")[-1]
+        post_data = request_str.split("\r\n\r\n")[-1]
         print(f"POST Data: {post_data}")
-        params = {}
-        for pair in post_data.split('&'):
-            if '=' in pair:
-                key, value = pair.split('=')
-                params[key] = value
-        return params
+        
+        _, post_data = post_data.split("=")
+        
+        return [int(i) for i in post_data.split("%20")]
     
     def http_server(self):
         # Create socket for HTTP server
@@ -52,7 +54,7 @@ class WIFI:
             
             if 'POST' in request:
                 params = self.parse_post_data(request)
-                message = params.get("message", "No message")
+                message = params
                 print(f"Received message: {message}")
             
             client.send('HTTP/1.1 200 OK\n')

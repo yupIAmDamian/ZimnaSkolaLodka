@@ -1,35 +1,108 @@
-"""<!DOCTYPE html>
-<html>
-<head>
-    <title>Send Data to ESP32</title>
-</head>
-<body>
-    <h1>Send Data to ESP32 without Form</h1>
-    <button id="sendButton">Send Message</button>
-
-    <script>
-        // JavaScript function to send data when the button is clicked
-        document.getElementById('sendButton').onclick = function() {
+<DOCTYPE html>
+    <html>
+      <head>
+        <title>Send Data to ESP32</title>
+        <style>
+          * {
+            padding: 0;
+            margin: 0;
+          }
+  
+          #myCanvas {
+            border: 1px solid #000000;
+          }
+        </style>
+      </head>
+      <body>
+        <canvas id="myCanvas"></canvas>
+  
+        <script>
+          window.onload = function() {
+              let canvas = document.getElementById("myCanvas");
+              let ctx = canvas.getContext("2d");
+              let height = canvas.height = window.innerHeight;
+              let width = canvas.width = window.innerWidth;
+              let radius = 0.6*(canvas.width < canvas.height ? canvas.width : canvas.height)/2;
+              let dot_radius = radius/3;
+              let angle_var;
+              let distance;
+              
+              canvas.addEventListener("mousemove", move_circle);
+  
+              function getMousePos(evt) {
+                  let rect = canvas.getBoundingClientRect();
+                  return {
+                      x: evt.clientX,
+                      y: evt.clientY
+                  };
+              }
+  
+              function move_circle(evt) {
+                  var mousePos = getMousePos(evt);
+                  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  
+                  ctx.beginPath();
+                  ctx.arc(canvas.width/2,  canvas.height/2, radius, 0, 2 * Math.PI);
+                  ctx.fillStyle = "red";
+                  ctx.fill();
+                  ctx.stroke();
+  
+                  distance = center_distance(mousePos.x, mousePos.y)
+                  angle_var = angle(mousePos.x, mousePos.y)
+  
+                  let x = mousePos.x
+                  let y = mousePos.y
+                  ctx.beginPath();
+                  if (distance >= radius){
+                      x = Math.cos(angle_var) * (radius ) + canvas.width/2;
+                      y = Math.sin(angle_var) * (radius ) + canvas.height/2;
+                      
+                  }
+                  ctx.arc(x, y, dot_radius, 0, 2 * Math.PI);
+                  ctx.fillStyle = "white";
+                  ctx.fill();
+                  ctx.stroke();
+  
+                  send_data()
+              }
+  
+              function center_distance(x,y){
+                  return Math.sqrt((x - canvas.width/2)**2 + (y - canvas.height/2)**2);
+              }
+  
+              function angle(x,y){
+                  return Math.atan2(y - canvas.height/2, x - canvas.width/2);
+              }
+  
+  
+          };
+  
+  
+  
+          function send_data() {
             // Data to send (you can modify this as needed)
-            const message = "2 4";
-
+            const message = "1";
+  
             // Send data to the ESP32 using fetch API
-            fetch('http://192.168.4.1/', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded',
-                },
-                body: 'message=' + encodeURIComponent(message)  // Encoding message as URL parameters
+            fetch("http://192.168.4.1/", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/x-www-form-urle--ncoded",
+              },
+              body: "message=" + encodeURIComponent(message), // Encoding message as URL parameters
             })
-            .then(response => response.text())
-            .then(data => {
-                console.log('Response from ESP32:', data);  // Log the response from ESP32
-            })
-            .catch(error => {
-                console.error('Error:', error);
-            });
-        };
-    </script>
-</body>
-</html>
-"""
+              .then((response) => response.text())
+              .then((data) => {
+                console.log("Response from ESP32:", data); // Log the response from ESP32
+              })
+              .catch((error) => {
+                console.error("Error:", error);
+              });
+          };
+        </script>
+      </body>
+    </html></DOCTYPE
+  >
+  
+  
+  
