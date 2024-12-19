@@ -38,12 +38,14 @@ class WIFI:
         data = post_data.split(" ")
 
         # Get the angle and distance as floats
+        print(data)
         angle = float(data[0])  # Get the angle value
         distance = float(data[1])  # Get the distance value
+        max_dist = 1 
 
         print(f"Parsed values - Angle: {angle}, Distance: {distance}")
 
-        return angle, distance
+        return angle, distance, max_dist
 
     
     def http_server(self):
@@ -59,19 +61,21 @@ class WIFI:
             
             request = client.recv(1024)
             
-            if b'GET /favicon' in request or b'GET /apple-touch-icon' in request:
-                client.send('HTTP/1.1 204 No Content\n')  # No content for favicon
+            """
+            if b'GET /favicon' or b'GET /apple-touch-icon' in request:
+                client.send('HTTP/1.1 204 No Content\n')  # No content, no favicon
                 client.send('Connection: close\n\n')
                 client.close()
                 continue
+            """
             
             print('')
             print(f'Request: {request}')
             print('')
             
             if 'POST' in request:
-                distance, angle = self.parse_post_data(request)
-                print(f"Received message: {distance}, {angle}")
+                distance, angle, max_dist = self.parse_post_data(request)
+                print(f"Received message: {distance}, {angle}, {max_dist}")
             
             client.send('HTTP/1.1 200 OK\n')
             client.send('Content-Type: text/html\n')
