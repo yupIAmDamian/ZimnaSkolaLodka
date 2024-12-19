@@ -8,7 +8,7 @@
                     margin: 0;
                 }
                 body {
-                    overflow: hidden; /* Hide scrollbars */
+                    overflow: hidden;
                 }
     
                 #myCanvas {
@@ -35,6 +35,8 @@
                 canvas.addEventListener("mousedown", function(event) {
                     openFullscreen(canvas);
                     height = canvas.height = window.innerHeight;
+                    radius = 0.6 * (canvas.width < canvas.height ? canvas.width : canvas.height) / 2;
+                    dot_radius = radius / 3;
                     width = canvas.width = window.innerWidth;
                     isDragging = true;
                     move_circle(event);
@@ -82,18 +84,31 @@
                         y: evt.clientY - rect.top
                     };
                 }
-    
+
+                function drawSegment(startAngle, endAngle, color) {
+                    ctx.beginPath();
+                    ctx.moveTo(canvas.width/2, canvas.height/2);
+                    ctx.arc(canvas.width/2, canvas.height/2, radius, startAngle, endAngle);
+                    ctx.closePath();
+                    ctx.fillStyle = color;
+                    ctx.fill();
+                }
+
+                const colors = ["red", "orange","orange", "red","orange", "red","red", "orange"];
+
                 function move_circle(evt, r = 0) {
                     let pos = getPos(evt);
     
                     ctx.fillStyle = "black";
                     ctx.fillRect(0, 0, canvas.width, canvas.height);
     
-                    ctx.beginPath();
-                    ctx.arc(canvas.width / 2, canvas.height / 2, radius, 0, 2 * Math.PI);
-                    ctx.fillStyle = "red";
-                    ctx.fill();
-                    ctx.stroke();
+                    for (let i = 0; i < 8; i++) {
+                        drawSegment(
+                            (i * Math.PI) / 4,
+                            ((i + 1) * Math.PI) / 4,
+                            colors[i]
+                        );
+                    }
     
                     distance = center_distance(pos.x, pos.y);
                     angle_var = angle(pos.x, pos.y);
@@ -116,8 +131,7 @@
                     ctx.fill();
                     ctx.stroke();
                     
-                    //must send max distance
-                    send_data(angle_var, distance, radius);
+                    send_data(angle_var, distance, radius + dot_radius);
     
                 }
     
@@ -141,8 +155,18 @@
                     element.msRequestFullscreen();
                 }
             }
+
+            function offsetAngle(angle) {
+                return angle;
+                if (angle < Math.PI/2) {
+                    return angle + Math.PI/2;
+                } else {
+                    return -angle;
+                }
+            }
+
             function send_data(a, d, r) {
-                let message = `${a || 0} ${d || 0} ${r || 0}`;
+                let message = `${offsetAngle(a) || 0} ${(d > r ? r : d) || 0} ${r || 0}`;
                 console.log(message);
     
                 fetch("http://192.168.4.1/", {
@@ -163,6 +187,4 @@
             </script>
         </body>
     </html></DOCTYPE>
-    
-    
 
