@@ -35,9 +35,9 @@
                 canvas.addEventListener("mousedown", function(event) {
                     openFullscreen(canvas);
                     height = canvas.height = window.innerHeight;
+                    width = canvas.width = window.innerWidth;
                     radius = 0.6 * (canvas.width < canvas.height ? canvas.width : canvas.height) / 2;
                     dot_radius = radius / 3;
-                    width = canvas.width = window.innerWidth;
                     isDragging = true;
                     move_circle(event);
                 });
@@ -45,22 +45,25 @@
                 canvas.addEventListener("mousemove", function(event) {
                     if (isDragging) {
                         move_circle(event);
+                        lastEvent = getPos(event);
                     }
                 });
     
                 canvas.addEventListener("mouseup", function(event) {
                     isDragging = false;
-                    move_circle(event, 1);
+                    move_circle(lastEvent, 1);
                 });
     
                 canvas.addEventListener("mouseleave", function(event) {
                     isDragging = false;
-                    move_circle(event, 1);
+                    move_circle(lastEvent, 1);
                 });
     
                 canvas.addEventListener("touchstart", function(event) {
                     height = canvas.height = window.innerHeight;
                     width = canvas.width = window.innerWidth;
+                    radius = 0.6 * (canvas.width < canvas.height ? canvas.width : canvas.height) / 2;
+                    dot_radius = radius / 3;
                     openFullscreen(canvas);
                     isDragging = true;
                     move_circle(event.touches[0]);
@@ -69,12 +72,13 @@
                 canvas.addEventListener("touchmove", function(event) {
                     if (isDragging) {
                         move_circle(event.touches[0]);
+                        lastEvent = getPos(event);
                     }
                 });
     
                 canvas.addEventListener("touchend", function(event) {
                     isDragging = false;
-                    move_circle(event.changedTouches[0], 1);
+                    move_circle(lastEvent.touches[0], 1);
                 });
     
                 function getPos(evt) {
@@ -187,4 +191,5 @@
             </script>
         </body>
     </html></DOCTYPE>
+
 

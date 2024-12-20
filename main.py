@@ -5,7 +5,7 @@ from math import cos, sin, pi
 from neopixel import NeoPixel
 
 buttonPin = Pin(7, Pin.IN, Pin.PULL_UP)
-buttonPin = Pin(16, Pin.IN, Pin.PULL_DOWN)
+buttonPin2 = Pin(16, Pin.IN, Pin.PULL_DOWN)
 
 motors = [
     [PWM(Pin(10, Pin.OUT), freq=1000, duty= 0), PWM(Pin(11, Pin.OUT), freq=1000, duty= 0)],
@@ -13,12 +13,12 @@ motors = [
 ]
     
 np = NeoPixel(Pin(14), 1)
-np.fill((0,5,0))
+np.fill((0,150,0))
 np.write()
 
 
 def defeated(pin):
-    np.fill((5,0,0))
+    np.fill((150,0,0))
     np.write()
     for motor in motors:
         for direction in motor:
@@ -28,10 +28,10 @@ def defeated(pin):
     np.fill((0,0,0))
     np.write()
     while True:
-        pass
+        continue
     
 buttonPin.irq(trigger=Pin.IRQ_RISING, handler=defeated)
-buttonPin.irq(trigger=Pin.IRQ_RISING, handler=defeated)
+buttonPin2.irq(trigger=Pin.IRQ_RISING, handler=defeated)
     
 
 from math import pi
@@ -66,17 +66,17 @@ def move(a, s, sMax):
         elif angle >= -pi:
             sR = mapping(-angle, pi*(3/4), pi, 0, -speedMax)
     
-    if sL >= 0:
-        motors[0][0].duty(int(sL))
-    else:
-        motors[0][1].duty(int(-sL))
-        
     if sR >= 0:
-        motors[1][0].duty(int(sR))
+        motors[0][0].duty(int(sR))
     else:
-        motors[1][1].duty(int(-sR))
+        motors[0][1].duty(int(-sR))
         
-    print(angle, sL, sR)
+    if sL >= 0:
+        motors[1][0].duty(int(sL))
+    else:
+        motors[1][1].duty(int(-sL))
+        
+    print(angle, sR, sL)
 
 def mapping(value, in_min, in_max, out_min, out_max):
     return (value - in_min) * (out_max - out_min) / (in_max - in_min) + out_min
